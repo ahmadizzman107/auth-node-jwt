@@ -50,7 +50,7 @@ const login = async (req, res) => {
     }
     const user = await User.findOne({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && bcrypt.compare(password, user.password)) {
       const token = jwt.sign(
         { user_id: user._id, email },
         process.env.TOKEN_KEY,
@@ -77,8 +77,8 @@ const login = async (req, res) => {
 
 const currentAuth = async (req, res) => {
   try {
-    const token =
-      req.body.token || req.query.token || req.headers['x-access-token'];
+    const authHeader = req.headers['Authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     const currentUser = await User.findOne({
       token,
