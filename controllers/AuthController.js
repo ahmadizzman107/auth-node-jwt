@@ -39,7 +39,7 @@ const register = async (req, res) => {
     res.status(201).json(user);
   } catch (err) {
     console.error(err);
-    res.status(500);
+    res.sendStatus(500);
   }
 };
 
@@ -74,18 +74,18 @@ const login = async (req, res) => {
     return res.status(400).send('Invalid Credentials');
   } catch (err) {
     console.error(err);
-    res.status(500);
+    res.sendStatus(500);
   }
 };
 
 const refresh = (req, res) => {
   const refreshToken = req.body.token;
 
-  if (!refreshToken) return res.status(401);
-  if (!refreshTokens.includes(refreshToken)) return res.status(403);
+  if (!refreshToken) return res.sendStatus(401);
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
 
   jwt.verify(refreshToken, process.env.REFRESH_KEY, async (error, user) => {
-    if (error) return res.status(403);
+    if (error) return res.sendStatus(403);
 
     const accessToken = sign(user._id, user.email);
 
@@ -99,7 +99,7 @@ const refresh = (req, res) => {
 
 const logout = (req, res) => {
   refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-  res.status(204);
+  res.sendStatus(204);
 };
 
 const currentAuth = async (req, res) => {
@@ -118,7 +118,7 @@ const currentAuth = async (req, res) => {
     return res.status(201).json(userProfile);
   } catch (error) {
     console.error(err);
-    res.status(500);
+    res.sendStatus(500);
   }
 };
 module.exports = {
