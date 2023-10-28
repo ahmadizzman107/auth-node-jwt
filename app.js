@@ -13,10 +13,17 @@ const {
   register,
   login,
   currentAuth,
+  refresh,
+  logout,
 } = require('./controllers/AuthController');
 
+app.get('/', () => {
+  console.log('Goin live!');
+});
 app.post('/register', register);
 app.post('/login', login);
+app.post('/refresh', refresh);
+app.delete('/logout', logout);
 app.get('/me', verify, currentAuth);
 
 module.exports = app;
