@@ -15,13 +15,13 @@ const register = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
     if (!(email && password && firstName && lastName)) {
-      res.sendStatus(400).send('All input is required');
+      res.status(400).send('All input is required');
     }
 
     const oldUser = await User.findOne({ email });
 
     if (oldUser) {
-      return res.sendStatus(409).send('User Already Exist. Please Login');
+      return res.status(409).send('User Already Exist. Please Login');
     }
 
     encryptedUserPassword = await bcrypt.hash(password, 10);
@@ -39,7 +39,7 @@ const register = async (req, res) => {
     res.status(201).json(user);
   } catch (err) {
     console.error(err);
-    res.sendStatus(500);
+    res.status(500);
   }
 };
 
@@ -48,7 +48,7 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!(email && password)) {
-      res.sendStatus(400).send('All input is required');
+      res.status(400).send('All input is required');
     }
     const user = await User.findOne({ email });
 
@@ -71,21 +71,21 @@ const login = async (req, res) => {
         .status(200)
         .json({ token, refresh, expiresIn: process.env.EXPIRES_IN });
     }
-    return res.sendStatus(400).send('Invalid Credentials');
+    return res.status(400).send('Invalid Credentials');
   } catch (err) {
     console.error(err);
-    res.sendStatus(500);
+    res.status(500);
   }
 };
 
 const refresh = (req, res) => {
   const refreshToken = req.body.token;
 
-  if (!refreshToken) return res.sendStatus(401);
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  if (!refreshToken) return res.status(401);
+  if (!refreshTokens.includes(refreshToken)) return res.status(403);
 
   jwt.verify(refreshToken, process.env.REFRESH_KEY, async (error, user) => {
-    if (error) return res.sendStatus(403);
+    if (error) return res.status(403);
 
     const accessToken = sign(user._id, user.email);
 
@@ -99,7 +99,7 @@ const refresh = (req, res) => {
 
 const logout = (req, res) => {
   refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-  res.sendStatus(204);
+  res.status(204);
 };
 
 const currentAuth = async (req, res) => {
@@ -108,7 +108,7 @@ const currentAuth = async (req, res) => {
       email: req.user.email,
     });
 
-    if (!currentUser) return res.sendStatus(404).send('User not found!');
+    if (!currentUser) return res.status(404).send('User not found!');
 
     const userProfile = {
       firstName: currentUser.first_name,
@@ -118,7 +118,7 @@ const currentAuth = async (req, res) => {
     return res.status(201).json(userProfile);
   } catch (error) {
     console.error(err);
-    res.sendStatus(500);
+    res.status(500);
   }
 };
 module.exports = {
